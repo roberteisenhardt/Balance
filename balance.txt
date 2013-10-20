@@ -1,0 +1,42 @@
+// Robert Eisenhardt's work starts here
+//maxZoomingDistance and minZoomingDistance gathered from using Debug
+private var MAX_ZOOMING_DISTANCE = 4.971004;
+private var MIN_ZOOMING_DISTANCE= 0.51495695;
+//minHeight and maxHeight gathered from using Debug 
+//private var MIN_ZOOMING_HEIGHT = -0.5687878;
+//private var MAX_ZOOMING_HEIGHT = 3.128146;
+// Robert Eisenhardt's work ends here
+
+function Update() {
+ 
+ if (!isControllable)
+ {
+  // kill all inputs if not controllable.
+  //Input.ResetInputAxes();
+  _animation.CrossFade(idleAnimation.name);
+  
+ }
+ else{
+  // added by Xinyi starts here
+  // carmera zooming target - Alex's head
+  var targetDirection = (transform.position - cameraScript.cameraTransform.position).normalized;
+  
+  if (Input.GetAxis("Mouse ScrollWheel") > 0) { // scroll forward
+   isZooming = true;
+   targetDistance = Mathf.Clamp(cameraScript.distance - targetDirection.z * zoomingSpeed, MIN_ZOOMING_DISTANCE, MAX_ZOOMING_DISTANCE);
+   targetHeight = targetDistance / 2; // keep the Distance-to-Height ratio 2:1
+  }
+  else if (Input.GetAxis("Mouse ScrollWheel") < 0) { // scroll backward
+   isZooming = true;
+   targetDistance = Mathf.Clamp(cameraScript.distance + targetDirection.z * zoomingSpeed, MIN_ZOOMING_DISTANCE, MAX_ZOOMING_DISTANCE);
+   targetHeight = targetDistance / 2;
+  }
+  
+  if (isZooming) {
+   cameraScript.height = Mathf.Lerp(cameraScript.height, targetHeight, Time.deltaTime);
+   cameraScript.distance = Mathf.Lerp(cameraScript.distance, targetDistance, Time.deltaTime);
+   
+   if (cameraScript.height == targetHeight && cameraScript.distance == targetDistance) {
+    isZooming = false;
+   }
+  }
